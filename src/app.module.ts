@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { dataSourceOptions } from '../db/data-source';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
@@ -12,7 +11,6 @@ import configuration, { loadEnvironment } from '../config/configuration';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(dataSourceOptions),
     UsersModule,
     AuthModule,
     ConfigModule.forRoot({
