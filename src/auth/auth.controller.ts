@@ -10,15 +10,15 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService, Auth } from './auth.service';
 import { Public } from './AuthMetadata';
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
-import { User } from '../users/entities/user.entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { UsersService } from '../users/users.service';
+import { FirebaseService } from 'src/firebase/firebase.service';
+import { User } from 'firebase/auth';
 
 @Controller()
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private usersService: UsersService,
+    private fireService: FirebaseService,
   ) {}
 
   @Public()
@@ -29,8 +29,8 @@ export class AuthController {
     type: Auth,
   })
   @Post('auth/login')
-  async login(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  async login(@Body() signInDto: Record<string, string>) {
+    return this.fireService.signIn(signInDto.email, signInDto.password);
   }
 
   @Post('auth/register')
@@ -38,11 +38,10 @@ export class AuthController {
   @ApiTags('Auth')
   @ApiCreatedResponse({
     description: 'Register on app',
-    type: User,
   })
   @UseInterceptors(ClassSerializerInterceptor)
   async register(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.create(createUserDto);
-    return user as User;
+    const user = await this.fireService.create(createUserDto.email,createUserDto.password );
+    return user;
   }
 }
