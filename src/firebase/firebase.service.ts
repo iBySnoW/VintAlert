@@ -1,21 +1,23 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { initializeApp, FirebaseApp } from 'firebase/app';
-import { configFirebase } from './confifFirebase';
+import { configFirebase } from './configFirebase';
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  UserCredential
+  UserCredential,
+  Auth
 } from 'firebase/auth';
 
 @Injectable()
 export class FirebaseService implements OnModuleInit {
   private firebaseApp: FirebaseApp;
-
-
+  private auth: Auth;
 
   constructor(private configService: ConfigService) {
+    console.log('Toutes les variables d\'environnement:', this.configService.get('FIREBASE_API_KEY'));
+    
     const firebase: configFirebase = {
       apiKey: this.configService.get<string>('FIREBASE_API_KEY'),
       authDomain: this.configService.get<string>('FIREBASE_AUTH_DOMAIN'),
@@ -23,9 +25,10 @@ export class FirebaseService implements OnModuleInit {
       storageBucket: this.configService.get<string>('FIREBASE_STORAGE_BUCKET'),
       messagingSenderId: this.configService.get<string>('FIREBASE_MESSAGING_SENDER_ID'),
       appId: this.configService.get<string>('FIREBASE_APP_ID')
-    }
-    console.log('Firebase config:', this.configService.get('FIREBASE_API_KEY'));
+    }    
+    console.log('initialize');
     this.initializeFirebase(firebase);
+
   }
 
   onModuleInit() {
@@ -33,8 +36,8 @@ export class FirebaseService implements OnModuleInit {
   }
 
   private initializeFirebase(config: configFirebase) {
-    console.log(config);
     this.firebaseApp = initializeApp(config);
+    this.auth = getAuth(this.firebaseApp);
   }
 
   getFirebaseApp(): FirebaseApp {
@@ -42,9 +45,8 @@ export class FirebaseService implements OnModuleInit {
   }
 
   async create(email: string, password: string): Promise<UserCredential> {
-    try {
-      const auth = getAuth(this.firebaseApp);
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    try {      
+      const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
       return userCredential;
     } catch (error) {
       throw error;
@@ -52,12 +54,9 @@ export class FirebaseService implements OnModuleInit {
   }
 
   async signIn(email: string, password: string): Promise<UserCredential> {
-    try {
-      const auth = getAuth(this.firebaseApp);
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    console.log('État de firebaseApp avant signIn:', this.firebaseApp); // Vérifiez l'instance avant la connexion
+
+      const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
       return userCredential;
-    } catch (error) {
-      throw error;
-    }
   }
 }

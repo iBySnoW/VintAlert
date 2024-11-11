@@ -1,7 +1,24 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { join } from 'path';
 
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as firebaseAdmin from 'firebase-admin';
+import * as fs from 'fs';
+//firebase ;
+/*const firebaseKeyFilePath = join(__dirname, '..', 'vintedalert-ff3a6-firebase-adminsdk-dg7xi-ef79cb7394.json');
+
+console.log(firebaseKeyFilePath);
+const firebaseServiceAccount  = JSON.parse(
+fs.readFileSync(firebaseKeyFilePath).toString(),
+);
+if (firebaseAdmin.apps.length === 0) {
+console.log('Initialize Firebase Application.');
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert(firebaseServiceAccount),
+});
+}
+*/
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 

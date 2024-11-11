@@ -7,16 +7,17 @@ import { AuthGuard } from './auth/auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration, { loadEnvironment } from '../config/configuration';
 import { FirebaseModule } from './firebase/firebase.module';
+import { VintedModule } from './vinted/vinted.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [configuration],
-      envFilePath: 'dev.env',
+      envFilePath: 'config/environment/.env',
       isGlobal: true,
     }),
     AuthModule,
     FirebaseModule,
+    VintedModule,
   ],
   controllers: [AppController],
   providers: [
