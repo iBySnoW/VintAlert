@@ -8,6 +8,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration, { loadEnvironment } from '../config/configuration';
 import { FirebaseModule } from './firebase/firebase.module';
 import { VintedModule } from './vinted/vinted.module';
+import { RoomsModule } from './rooms/rooms.module';
+import { BookingsModule } from './bookings/bookings.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { VintedModule } from './vinted/vinted.module';
     AuthModule,
     FirebaseModule,
     VintedModule,
+    RoomsModule,
+    BookingsModule,
   ],
   controllers: [AppController],
   providers: [
