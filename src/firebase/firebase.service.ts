@@ -9,11 +9,13 @@ import {
   UserCredential,
   Auth
 } from 'firebase/auth';
+import { getFirestore, Firestore, addDoc, doc, getDoc , collection } from 'firebase/firestore';
 
 @Injectable()
 export class FirebaseService implements OnModuleInit {
   private firebaseApp: FirebaseApp;
   private auth: Auth;
+  private firestore: Firestore;
 
   constructor(private configService: ConfigService) {
     console.log('Toutes les variables d\'environnement:', this.configService.get('FIREBASE_API_KEY'));
@@ -28,6 +30,7 @@ export class FirebaseService implements OnModuleInit {
     }    
     console.log('initialize');
     this.initializeFirebase(firebase);
+    this.firestore = getFirestore(this.firebaseApp);
 
   }
 
@@ -58,5 +61,16 @@ export class FirebaseService implements OnModuleInit {
 
       const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
       return userCredential;
+  }
+
+  async createDocument(collectionName: string, data: any) {
+    const docRef = await addDoc(collection(this.firestore, collectionName), data);
+    return docRef.id;
+  }
+
+  async findOne(collection: string, id: string) {
+    const docRef = doc(this.firestore, collection, id);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data() : null;
   }
 }
