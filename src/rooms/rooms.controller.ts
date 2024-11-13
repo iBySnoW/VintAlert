@@ -30,7 +30,7 @@ export class RoomController {
     @Public()
 
   @Get(':id')
-  async getRoomById(@Param('id', ParseIntPipe) id: string) {
+  async getRoomById(@Param('id') id: string) {
     return this.roomService.getRoomById(id);
   }
 
@@ -39,7 +39,7 @@ export class RoomController {
 
   @Put(':id')
   async updateRoom(
-    @Param('id', ParseIntPipe) id: string,
+    @Param('id') id: string,
     @Body() updateRoomDto: UpdateRoomDto,
   ) {
     return this.roomService.updateRoom(id, updateRoomDto);
@@ -49,7 +49,7 @@ export class RoomController {
     @Public()
 
   @Delete(':id')
-  async deleteRoom(@Param('id', ParseIntPipe) id: string){
+  async deleteRoom(@Param('id') id: string){
     return this.roomService.deleteRoom(id);
   }
 }
