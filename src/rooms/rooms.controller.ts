@@ -1,7 +1,6 @@
 // src/modules/rooms/room.controller.ts
 import { Controller, Get, Post, Param, Body, Put, Delete, ParseIntPipe } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
-import { Room } from './room.dto';
 import { Public } from '../auth/AuthMetadata'; // Assurez-vous d'avoir ce décorateur
 
 import { CreateRoomDto, UpdateRoomDto } from './room.dto';

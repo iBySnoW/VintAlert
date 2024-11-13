@@ -10,7 +10,6 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService, Auth } from './auth.service';
 import { Public } from './AuthMetadata';
-import { ApiCreatedResponse, ApiTags , ApiQuery } from '@nestjs/swagger';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { User } from 'firebase/auth';
