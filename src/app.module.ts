@@ -1,25 +1,29 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration, { loadEnvironment } from '../config/configuration';
 import { FirebaseModule } from './firebase/firebase.module';
-import { FirebaseModule } from './firebase/firebase.module';
+import { VintedModule } from './vinted/vinted.module';
+import { RoomsModule } from './rooms/rooms.module';
+import { BookingsModule } from './bookings/bookings.module';
+import { MoviesModule } from './movies/movies.module';
 
 @Module({
   imports: [
-    UsersModule,
-    AuthModule,
     ConfigModule.forRoot({
-      envFilePath: loadEnvironment(process.env.NODE_ENV),
-      load: [configuration],
+      envFilePath: 'config/environment/.env',
+      isGlobal: true,
     }),
+    AuthModule,
     FirebaseModule,
+    VintedModule,
+    RoomsModule,
+    BookingsModule,
+    MoviesModule,
   ],
   controllers: [AppController],
   providers: [

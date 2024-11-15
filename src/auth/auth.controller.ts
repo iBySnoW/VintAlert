@@ -1,48 +1,44 @@
 import {
   Controller,
   Post,
-  UseGuards,
+  Get,
   Body,
+  Query,
   UseInterceptors,
   ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService, Auth } from './auth.service';
 import { Public } from './AuthMetadata';
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
-import { User } from '../users/entities/user.entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { UsersService } from '../users/users.service';
+import { FirebaseService } from 'src/firebase/firebase.service';
+import { User } from 'firebase/auth';
+
+export class LoginDto {
+  email: string;
+  password: string;
+}
 
 @Controller()
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private usersService: UsersService,
+    private fireService: FirebaseService,
   ) {}
 
   @Public()
-  @UseGuards(AuthGuard('local'))
-  @ApiTags('Auth')
-  @ApiCreatedResponse({
-    description: 'Login on app',
-    type: Auth,
-  })
-  @Post('auth/login')
-  async login(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
-  }
+  @Get('auth/login')
+  method(@Query() query: LoginDto) { 
+    // 1. Simple console.log
+    console.log('Name parameter:', query);
+    return this.fireService.signIn(query.email, query.password);
 
-  @Post('auth/register')
+}
+
+  @Get('auth/register')
   @Public()
-  @ApiTags('Auth')
-  @ApiCreatedResponse({
-    description: 'Register on app',
-    type: User,
-  })
-  @UseInterceptors(ClassSerializerInterceptor)
-  async register(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.create(createUserDto);
-    return user as User;
+  async register(@Query() createUserDto: CreateUserDto) {
+    const user = await this.fireService.create(createUserDto.email,createUserDto.password );
+    return user;
   }
 }
