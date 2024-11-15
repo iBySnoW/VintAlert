@@ -5,7 +5,6 @@ import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import configuration, { loadEnvironment } from '../config/configuration';
 import { FirebaseModule } from './firebase/firebase.module';
 import { VintedModule } from './vinted/vinted.module';
 import { RoomsModule } from './rooms/rooms.module';

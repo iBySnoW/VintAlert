@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { initializeApp, FirebaseApp } from 'firebase/app';
 import { configFirebase } from './configFirebase';
@@ -10,6 +10,7 @@ import {
   Auth
 } from 'firebase/auth';
 import { getFirestore, Firestore, addDoc, doc, getDoc , collection } from 'firebase/firestore';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class FirebaseService implements OnModuleInit {
@@ -17,9 +18,10 @@ export class FirebaseService implements OnModuleInit {
   private auth: Auth;
   private firestore: Firestore;
 
-  constructor(private configService: ConfigService) {
-    console.log('Toutes les variables d\'environnement:', this.configService.get('FIREBASE_API_KEY'));
-    
+  constructor(
+    private configService: ConfigService,
+    private jwtService: JwtService
+  ) {
     const firebase: configFirebase = {
       apiKey: this.configService.get<string>('FIREBASE_API_KEY'),
       authDomain: this.configService.get<string>('FIREBASE_AUTH_DOMAIN'),
@@ -28,10 +30,8 @@ export class FirebaseService implements OnModuleInit {
       messagingSenderId: this.configService.get<string>('FIREBASE_MESSAGING_SENDER_ID'),
       appId: this.configService.get<string>('FIREBASE_APP_ID')
     }    
-    console.log('initialize');
     this.initializeFirebase(firebase);
     this.firestore = getFirestore(this.firebaseApp);
-
   }
 
   onModuleInit() {
@@ -56,11 +56,19 @@ export class FirebaseService implements OnModuleInit {
     }
   }
 
-  async signIn(email: string, password: string): Promise<UserCredential> {
-    console.log('État de firebaseApp avant signIn:', this.firebaseApp); // Vérifiez l'instance avant la connexion
-
+  async signIn(email: string, password: string): Promise<{ access_token: string }> {
+    try {      
       const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
-      return userCredential;
+
+      const payload = { sub: userCredential.user.providerId, username: userCredential.user.email };
+      return {
+        access_token: await this.jwtService.signAsync(payload),
+      };
+
+      
+    } catch (error) {
+        throw new UnauthorizedException("Identifiant de connexion invalide")  
+    }
   }
 
   async createDocument(collectionName: string, data: any) {
