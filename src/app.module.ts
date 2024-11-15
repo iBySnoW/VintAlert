@@ -10,6 +10,7 @@ import { FirebaseModule } from './firebase/firebase.module';
 import { VintedModule } from './vinted/vinted.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { BookingsModule } from './bookings/bookings.module';
+import { MoviesModule } from './movies/movies.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { BookingsModule } from './bookings/bookings.module';
     VintedModule,
     RoomsModule,
     BookingsModule,
+    MoviesModule,
   ],
   controllers: [AppController],
   providers: [
