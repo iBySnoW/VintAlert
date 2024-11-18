@@ -8,8 +8,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('My api')
-    .setDescription('The cats API description')
+    .setTitle('VintAlert API')
+    .setDescription('API to get the best business')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
