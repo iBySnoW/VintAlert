@@ -1,8 +1,6 @@
 import { Controller, Get, Post, Param, Body, Put, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
-import { Public } from '../auth/AuthMetadata';
 import { Booking } from './booking.entity'
-import { Auth } from 'firebase-admin/lib/auth/auth';
 import { AuthGuard } from 'src/auth/auth.guard';
 @Controller('bookings')
 export class BookingsController {

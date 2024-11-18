@@ -1,5 +1,6 @@
-import { Injectable,BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
+import { RoomsService } from '../rooms/rooms.service';
 import {
   getFirestore,
   collection,
@@ -10,86 +11,197 @@ import {
   getDoc,
   updateDoc,
   deleteDoc,
+  where,
 } from 'firebase/firestore';
 import { Booking } from './booking.entity';
 
 @Injectable()
 export class BookingsService {
   private db;
-  private isconflict;
-  constructor(private firebaseService: FirebaseService) {
+
+  constructor(
+    private readonly firebaseService: FirebaseService,
+    private readonly roomsService: RoomsService
+  ) {
     this.db = getFirestore(this.firebaseService.getFirebaseApp());
   }
 
   async createBooking(booking: Booking) {
-    console.log('create', booking);
-    // Vérification de la disponibilité de la salle
-    const isAvailable = await this.checkAvailability(
-        booking.room.id,
-        booking.startDate,
-        booking.endDate,
-    );
-    if (!isAvailable) {
+    try {
+      // Vérifier si la séance existe et n'est pas complète
+      const capacityCheck = await this.roomsService.checkRoomCapacity(
+        booking.filmShow.room.id.toString(),
+        booking.filmShow.id.toString()
+      );
+
+      if (!capacityCheck.isAvailable) {
+        throw new BadRequestException(
+          `La séance est complète. Capacité maximale: ${capacityCheck.maxCapacity}, Places restantes: ${capacityCheck.remainingSeats}`
+        );
+      }
+
+      const bookingRef = collection(this.db, 'bookings');
+      const docRef = await addDoc(bookingRef, {
+        userId: booking.user.id,
+        filmShowId: booking.filmShow.id,
+        createdAt: new Date(),
+      });
+
+      return {
+        id: docRef.id,
+        ...booking,
+      };
+    } catch (error) {
       throw new BadRequestException(
-        'La salle est déjà réservée pour cette période.',
+        `Erreur lors de la création de la réservation: ${error.message}`
       );
     }
-    const bookingRef = collection(this.db, 'bookings');
-    const docRef = await addDoc(bookingRef, booking);
-    return docRef.id;
   }
-  private async checkAvailability(roomId: number, startDate: Date, endDate: Date, bookingId?: number){
-    const bookingRef = await query(collection(this.db,'bookings'));
-    const bookings = await getDocs(bookingRef);
-    let isAvailable = true; // Initialize availability as true
 
-    // Vérifier les réservations qui se chevauchent
-    bookings.forEach((doc) => {
-        const booking = doc.data() as Booking;
-        const bookingStart = booking.startDate; // Assurez-vous que startDate est un objet Date
-        const bookingEnd = booking.endDate; // Assurez-vous que endDate est un objet Date
-        if (booking.room.id === roomId && 
-            ((startDate >= bookingStart && startDate < bookingEnd) || 
-             (endDate > bookingStart && endDate <= bookingEnd) || 
-             (startDate <= bookingStart && endDate >= bookingEnd))) {
-            isAvailable = false; // Set to false if a conflict is found
-        }
-    });
-    return isAvailable;
-
-  }
-  async getAllBookings(){
-    const bookings = await query(collection(this.db,'bookings'));
+  async getAllBookings() {
+    const bookings = await query(collection(this.db, 'bookings'));
     const bookingDocs = await getDocs(bookings);
-    const Tabbookings = [];
-    bookingDocs.forEach((doc) =>{
-        Tabbookings.push(doc.data() as Booking); // Ajouter chaque réservation au tableau 
-    });
-    return Tabbookings
-  }
-
-  async getBookingsByRoom(bookingId: string){
-    const bookingsQuery = await query(collection(this.db,'bookings'));
-    const bookingDocs = await getDocs(bookingsQuery);
-    const roomBookings = []; // Tableau pour stocker les réservations de la salle
+    const bookingsList = [];
 
     bookingDocs.forEach((doc) => {
-        const booking = doc.data() as Booking; // Récupérer les données de réservation
-        if (doc.id === bookingId) { // Vérifier si l'ID de la salle correspond
-            roomBookings.push(booking); // Ajouter la réservation au tableau
-        }
+      bookingsList.push({
+        id: doc.id,
+        ...doc.data(),
+      } as Booking);
     });
-    return roomBookings;
+
+    return bookingsList;
+  }
+
+  async getBookingsByUser(userId: string) {
+    const bookingsQuery = query(
+      collection(this.db, 'bookings'),
+      where('userId', '==', userId)
+    );
+    const bookingDocs = await getDocs(bookingsQuery);
+    const userBookings = [];
+
+    bookingDocs.forEach((doc) => {
+      userBookings.push({
+        id: doc.id,
+        ...doc.data(),
+      } as Booking);
+    });
+
+    return userBookings;
+  }
+
+  async getBookingsByFilmShow(filmShowId: number) {
+    const bookingsQuery = query(
+      collection(this.db, 'bookings'),
+      where('filmShowId', '==', filmShowId)
+    );
+    const bookingDocs = await getDocs(bookingsQuery);
+    const filmShowBookings = [];
+
+    bookingDocs.forEach((doc) => {
+      filmShowBookings.push({
+        id: doc.id,
+        ...doc.data(),
+      } as Booking);
+    });
+
+    return filmShowBookings;
+  }
+
+  async getBookingById(bookingId: string) {
+    const bookingRef = doc(this.db, 'bookings', bookingId);
+    const bookingDoc = await getDoc(bookingRef);
+
+    if (!bookingDoc.exists()) {
+      throw new BadRequestException('Réservation non trouvée');
+    }
+
+    return {
+      id: bookingDoc.id,
+      ...bookingDoc.data(),
+    } as Booking;
   }
 
   async updateBooking(bookingId: string, updatedData: Partial<Booking>) {
-    const bookingRef = doc(this.db, 'bookings', bookingId); // Référence au document de réservation
-    await updateDoc(bookingRef, updatedData); // Mettre à jour les données de réservation
-    return { message: 'Réservation mise à jour avec succès.' }; // Message de confirmation
+    try {
+      if (updatedData.filmShow) {
+        const capacityCheck = await this.roomsService.checkRoomCapacity(
+          updatedData.filmShow.room.id.toString(),
+          updatedData.filmShow.id.toString()
+        );
+
+        if (!capacityCheck.isAvailable) {
+          throw new BadRequestException(
+            `La nouvelle séance est complète. Capacité maximale: ${capacityCheck.maxCapacity}, Places restantes: ${capacityCheck.remainingSeats}`
+          );
+        }
+      }
+
+      const bookingRef = doc(this.db, 'bookings', bookingId);
+      await updateDoc(bookingRef, {
+        ...updatedData,
+        updatedAt: new Date(),
+      });
+
+      return {
+        message: 'Réservation mise à jour avec succès.',
+        id: bookingId,
+        ...updatedData,
+      };
+    } catch (error) {
+      throw new BadRequestException(
+        `Erreur lors de la mise à jour de la réservation: ${error.message}`
+      );
+    }
   }
 
-  async deleteBooking(bookingId: string){
-    const bookingRef = doc(this.db, 'bookings', bookingId); // Référence au document de réservation
-    await deleteDoc(bookingRef);
+  async deleteBooking(bookingId: string) {
+    try {
+      const bookingRef = doc(this.db, 'bookings', bookingId);
+      await deleteDoc(bookingRef);
+      return { message: 'Réservation supprimée avec succès.' };
+    } catch (error) {
+      throw new BadRequestException(
+        `Erreur lors de la suppression de la réservation: ${error.message}`
+      );
+    }
+  }
+
+  async getBookingsByRoom(roomId: string): Promise<Booking[]> {
+    try {
+      // D'abord, récupérer toutes les séances pour cette salle
+      const filmShowsQuery = query(
+        collection(this.db, 'filmShows'),
+        where('room.id', '==', roomId)
+      );
+      const filmShowsSnapshot = await getDocs(filmShowsQuery);
+      
+      // Récupérer les IDs des séances
+      const filmShowIds = filmShowsSnapshot.docs.map(doc => doc.id);
+      
+      // Si aucune séance n'est trouvée, retourner un tableau vide
+      if (filmShowIds.length === 0) {
+        return [];
+      }
+
+      // Récupérer toutes les réservations pour ces séances
+      const bookingsQuery = query(
+        collection(this.db, 'bookings'),
+        where('filmShowId', 'in', filmShowIds)
+      );
+      const bookingsSnapshot = await getDocs(bookingsQuery);
+      
+      const bookings = bookingsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      } as Booking));
+
+      return bookings;
+    } catch (error) {
+      throw new BadRequestException(
+        `Erreur lors de la récupération des réservations pour la salle: ${error.message}`
+      );
+    }
   }
 }

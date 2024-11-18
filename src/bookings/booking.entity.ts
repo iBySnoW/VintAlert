@@ -1,13 +1,9 @@
 // src/modules/bookings/booking.entity.ts
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, JoinColumn } from 'typeorm';
 import { User } from '../users/user.entity';
-import { Room } from '../rooms/rooms.entity';
+import { FilmShow } from 'src/film-show/film-show.entity';
 
-@Entity()
 export class Booking {
-    id: number;
+    id: string;
     user: User;
-    room: Room;
-    startDate: Date;
-    endDate: Date;
+    filmShow: FilmShow;
 }

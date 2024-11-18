@@ -10,6 +10,7 @@ import { VintedModule } from './vinted/vinted.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { MoviesModule } from './movies/movies.module';
+import { FilmShowModule } from './film-show/film-show.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { MoviesModule } from './movies/movies.module';
     RoomsModule,
     BookingsModule,
     MoviesModule,
+    FilmShowModule,
   ],
   controllers: [AppController],
   providers: [
