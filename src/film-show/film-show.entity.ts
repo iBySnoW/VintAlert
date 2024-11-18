@@ -1,8 +1,7 @@
-import { Room } from '../rooms/rooms.entity';
-
 export class FilmShow {
     id: number;
-    room: Room;
+    roomId: string;
+    movieId: string;
     startDate: Date;
     endDate: Date;
 }

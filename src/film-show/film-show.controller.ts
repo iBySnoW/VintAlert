@@ -10,26 +10,38 @@ import {
 } from '@nestjs/common';
 import { FilmShowService } from './film-show.service';
 import { FilmShow } from './film-show.entity';
+import { Public } from 'src/auth/AuthMetadata';
+import { ApiBody, ApiOperation, ApiTags, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { CreateFilmShowDto } from './dto/create-film-show.dto';
+import { UpdateFilmShowDto } from './dto/update-film-show.dto';
 
+@ApiTags('film-shows')
 @Controller('film-shows')
 export class FilmShowController {
   constructor(private readonly filmShowService: FilmShowService) {}
 
-  @Post()
-  async createFilmShow(@Body() filmShow: FilmShow) {
-    try {
-      // Convertir les chaînes de date en objets Date
-      filmShow.startDate = new Date(filmShow.startDate);
-      filmShow.endDate = new Date(filmShow.endDate);
-
-      // Vérifier que la date de fin est après la date de début
-      if (filmShow.endDate <= filmShow.startDate) {
-        throw new BadRequestException(
-          'La date de fin doit être postérieure à la date de début'
-        );
+  @ApiOperation({ summary: 'Créer une nouvelle séance de film' })
+  @ApiBody({ 
+    type: CreateFilmShowDto,
+    description: 'Données de la séance à créer',
+    examples: {
+      example1: {
+        value: {
+          roomId: "salle-1",
+          movieId: "Tbv1IhN4xvX7sV75UeLb",
+          startDate: "2024-03-20T14:30:00.000Z"
+        }
       }
-
-      const result = await this.filmShowService.createFilmShow(filmShow);
+    }
+  })
+  @ApiResponse({ status: 201, description: 'Séance créée avec succès' })
+  @ApiResponse({ status: 400, description: 'Données invalides ou salle non disponible' })
+  @Public()
+  @Post()
+  async createFilmShow(@Body() createFilmShowDto: CreateFilmShowDto) {
+    try {
+      createFilmShowDto.startDate = new Date(createFilmShowDto.startDate);
+      const result = await this.filmShowService.createFilmShow(createFilmShowDto);
       return {
         message: 'Séance de film créée avec succès',
         id: result
@@ -41,6 +53,13 @@ export class FilmShowController {
     }
   }
 
+  @ApiOperation({ summary: 'Récupérer toutes les séances' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Liste des séances avec les détails des films',
+    type: [CreateFilmShowDto]
+  })
+  @Public()
   @Get()
   async getAllFilmShows() {
     try {
@@ -52,6 +71,14 @@ export class FilmShowController {
     }
   }
 
+  @ApiOperation({ summary: 'Récupérer une séance par son ID' })
+  @ApiParam({ name: 'id', description: 'ID de la séance' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Séance trouvée avec les détails du film',
+    type: FilmShow
+  })
+  @ApiResponse({ status: 404, description: 'Séance non trouvée' })
   @Get(':id')
   async getFilmShowById(@Param('id') id: string) {
     try {
@@ -63,6 +90,14 @@ export class FilmShowController {
     }
   }
 
+  @ApiOperation({ summary: 'Récupérer les séances par salle' })
+  @ApiParam({ name: 'roomId', description: 'ID de la salle' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Liste des séances pour la salle spécifiée',
+    type: [FilmShow]
+  })
+  @Public()
   @Get('room/:roomId')
   async getFilmShowsByRoom(@Param('roomId') roomId: number) {
     try {
@@ -74,13 +109,17 @@ export class FilmShowController {
     }
   }
 
+  @ApiOperation({ summary: 'Mettre à jour une séance' })
+  @ApiParam({ name: 'id', description: 'ID de la séance' })
+  @ApiBody({ type: UpdateFilmShowDto })
+  @ApiResponse({ status: 200, description: 'Séance mise à jour avec succès' })
+  @ApiResponse({ status: 400, description: 'Données invalides ou salle non disponible' })
   @Put(':id')
   async updateFilmShow(
     @Param('id') id: string,
-    @Body() updatedData: Partial<FilmShow>
+    @Body() updatedData: UpdateFilmShowDto
   ) {
     try {
-      // Convertir les dates si elles sont présentes
       if (updatedData.startDate) {
         updatedData.startDate = new Date(updatedData.startDate);
       }
@@ -88,7 +127,6 @@ export class FilmShowController {
         updatedData.endDate = new Date(updatedData.endDate);
       }
 
-      // Vérifier la cohérence des dates si les deux sont présentes
       if (updatedData.startDate && updatedData.endDate) {
         if (updatedData.endDate <= updatedData.startDate) {
           throw new BadRequestException(
@@ -105,6 +143,11 @@ export class FilmShowController {
     }
   }
 
+  @ApiOperation({ summary: 'Supprimer une séance' })
+  @ApiParam({ name: 'id', description: 'ID de la séance' })
+  @ApiResponse({ status: 200, description: 'Séance supprimée avec succès' })
+  @ApiResponse({ status: 404, description: 'Séance non trouvée' })
+  @Public()
   @Delete(':id')
   async deleteFilmShow(@Param('id') id: string) {
     try {

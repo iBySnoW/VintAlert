@@ -4,7 +4,6 @@ import { FirebaseService } from '../firebase/firebase.service';
 import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 
-
 @Injectable()
 export class MoviesService {
     private apiKey = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhMTUxZjhhYTc0OTU5ZWMyYTIxMGE5MjU1MzE4MTRhNCIsIm5iZiI6MTczMTY2NDg4OS4xODM1NTc3LCJzdWIiOiI2NzM2NDcwOTQ4ZTlkMmNmMDFhODgwZmIiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.Yx_CJGV5sOqcOQzE4OR1tgsIkrCBfPNC1gEK60-n760';
@@ -28,6 +27,7 @@ export class MoviesService {
     }));
     return simplifiedMovies;
   }
+
   async addMovieById(movieId: number) {
     console.log(`${this.apiUrl}/movie/${movieId}`);
     const response = await axios.get(`${this.apiUrl}/movie/${movieId}`, {
@@ -48,6 +48,17 @@ export class MoviesService {
     }
   }
 
+  async getMoviesFromFirebase() {
+    const moviesRef = collection(this.db, 'movies');
+    const moviesDocs = await getDocs(moviesRef);
+
+    return moviesDocs.docs.map(doc => (
+      {
+      id_base: doc.id,
+      ...doc.data()
+    }));
+  }
+
   async getMoviesID(movieId: number){
     const moviesRef = collection(this.db,'movies');
     const moviesDOC = await getDocs(moviesRef);
@@ -57,6 +68,20 @@ export class MoviesService {
     }))
   }
 
-
-
+  async removeMovie(firebaseId: string) {
+    try {
+      const movieRef = doc(this.db, 'movies', firebaseId);
+      await deleteDoc(movieRef);
+      return {
+        success: true,
+        message: "Film supprimé avec succès"
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Erreur lors de la suppression du film",
+        error: error.message
+      };
+    }
+  }
 }

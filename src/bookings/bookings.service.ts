@@ -14,6 +14,9 @@ import {
   where,
 } from 'firebase/firestore';
 import { Booking } from './booking.entity';
+import { CreateBookingDto } from './dto/create-booking.dto';
+import { FilmShowService } from '../film-show/film-show.service';
+import { UpdateBookingDto } from './dto/update-booking.dto';
 
 @Injectable()
 export class BookingsService {
@@ -21,41 +24,44 @@ export class BookingsService {
 
   constructor(
     private readonly firebaseService: FirebaseService,
-    private readonly roomsService: RoomsService
+    private readonly roomsService: RoomsService,
+    private filmShowService: FilmShowService
   ) {
     this.db = getFirestore(this.firebaseService.getFirebaseApp());
   }
 
-  async createBooking(booking: Booking) {
-    try {
-      // Vérifier si la séance existe et n'est pas complète
-      const capacityCheck = await this.roomsService.checkRoomCapacity(
-        booking.filmShow.room.id.toString(),
-        booking.filmShow.id.toString()
-      );
-
-      if (!capacityCheck.isAvailable) {
-        throw new BadRequestException(
-          `La séance est complète. Capacité maximale: ${capacityCheck.maxCapacity}, Places restantes: ${capacityCheck.remainingSeats}`
-        );
-      }
-
-      const bookingRef = collection(this.db, 'bookings');
-      const docRef = await addDoc(bookingRef, {
-        userId: booking.user.id,
-        filmShowId: booking.filmShow.id,
-        createdAt: new Date(),
-      });
-
-      return {
-        id: docRef.id,
-        ...booking,
-      };
-    } catch (error) {
-      throw new BadRequestException(
-        `Erreur lors de la création de la réservation: ${error.message}`
-      );
+  async createBooking(createBookingDto: CreateBookingDto): Promise<string> {
+    // Vérifier si la séance existe
+    const filmShow = await this.filmShowService.getFilmShowById(createBookingDto.filmShowId);
+    if (!filmShow) {
+      throw new BadRequestException('Séance non trouvée');
     }
+
+    // Vérifier le nombre de places déjà réservées pour cette séance
+    const bookingsQuery = query(
+      collection(this.db, 'bookings'),
+      where('filmShowId', '==', createBookingDto.filmShowId)
+    );
+    const bookingsDocs = await getDocs(bookingsQuery);
+    
+    let totalReservedSeats = 0;
+    bookingsDocs.forEach(doc => {
+      const booking = doc.data();
+      totalReservedSeats += booking.numberOfSeats;
+    });
+
+    // Vérifier si assez de places disponibles
+    if (totalReservedSeats + createBookingDto.numberOfSeats > filmShow.room.capacity) {
+      throw new BadRequestException('Plus assez de places disponibles');
+    }
+
+    // Créer la réservation
+    const bookingRef = await addDoc(collection(this.db, 'bookings'), {
+      ...createBookingDto,
+      createdAt: new Date().toISOString()
+    });
+
+    return bookingRef.id;
   }
 
   async getAllBookings() {
@@ -123,32 +129,67 @@ export class BookingsService {
     } as Booking;
   }
 
-  async updateBooking(bookingId: string, updatedData: Partial<Booking>) {
+  async updateBooking(bookingId: string, updatedData: UpdateBookingDto) {
     try {
-      if (updatedData.filmShow) {
-        const capacityCheck = await this.roomsService.checkRoomCapacity(
-          updatedData.filmShow.room.id.toString(),
-          updatedData.filmShow.id.toString()
-        );
+      // Récupérer la réservation existante
+      const currentBooking = await this.getBookingById(bookingId);
+      if (!currentBooking) {
+        throw new BadRequestException('Réservation non trouvée');
+      }
 
-        if (!capacityCheck.isAvailable) {
+      // Si le nombre de places ou la séance change, vérifier la capacité
+      if (updatedData.numberOfSeats || updatedData.filmShowId) {
+        const filmShowId = updatedData.filmShowId || currentBooking.filmShowId;
+        const filmShow = await this.filmShowService.getFilmShowById(filmShowId);
+        
+        if (!filmShow) {
+          throw new BadRequestException('Séance non trouvée');
+        }
+
+        // Calculer le nombre total de places réservées pour cette séance
+        const bookingsQuery = query(
+          collection(this.db, 'bookings'),
+          where('filmShowId', '==', filmShowId)
+        );
+        const bookingsDocs = await getDocs(bookingsQuery);
+        
+        let totalReservedSeats = 0;
+        bookingsDocs.forEach(doc => {
+          const booking = doc.data();
+          // Ne pas compter les places de la réservation en cours de modification
+          if (doc.id !== bookingId) {
+            totalReservedSeats += booking.numberOfSeats;
+          }
+        });
+
+        // Ajouter le nouveau nombre de places demandé
+        const newNumberOfSeats = updatedData.numberOfSeats || currentBooking.numberOfSeats;
+        
+        // Vérifier si la capacité est dépassée
+        if (totalReservedSeats + newNumberOfSeats > filmShow.room.capacity) {
           throw new BadRequestException(
-            `La nouvelle séance est complète. Capacité maximale: ${capacityCheck.maxCapacity}, Places restantes: ${capacityCheck.remainingSeats}`
+            `La capacité de la salle serait dépassée. Capacité: ${filmShow.room.capacity}, ` +
+            `Places déjà réservées: ${totalReservedSeats}, Places demandées: ${newNumberOfSeats}`
           );
         }
       }
 
+      // Mettre à jour la réservation
       const bookingRef = doc(this.db, 'bookings', bookingId);
-      await updateDoc(bookingRef, {
+      const updateData = {
         ...updatedData,
-        updatedAt: new Date(),
-      });
+        updatedAt: new Date().toISOString()
+      };
+
+      await updateDoc(bookingRef, updateData);
 
       return {
-        message: 'Réservation mise à jour avec succès.',
+        message: 'Réservation mise à jour avec succès',
         id: bookingId,
-        ...updatedData,
+        ...currentBooking,
+        ...updateData
       };
+
     } catch (error) {
       throw new BadRequestException(
         `Erreur lors de la mise à jour de la réservation: ${error.message}`
