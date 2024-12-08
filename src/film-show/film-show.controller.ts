@@ -79,6 +79,8 @@ export class FilmShowController {
     type: FilmShow
   })
   @ApiResponse({ status: 404, description: 'Séance non trouvée' })
+
+  @Public()
   @Get(':id')
   async getFilmShowById(@Param('id') id: string) {
     try {
