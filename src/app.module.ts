@@ -10,6 +10,8 @@ import { RoomsModule } from './rooms/rooms.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { MoviesModule } from './movies/movies.module';
 import { FilmShowModule } from './film-show/film-show.module';
+import { UsersController } from './users/users.controller';
+
 
 @Module({
   imports: [
@@ -24,14 +26,14 @@ import { FilmShowModule } from './film-show/film-show.module';
     MoviesModule,
     FilmShowModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, UsersController],
   providers: [
     AppService,
     ConfigService,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
-    },
+    }
   ],
 })
 export class AppModule {}

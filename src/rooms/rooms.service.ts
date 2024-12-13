@@ -9,7 +9,6 @@ export class RoomsService {
 
   constructor(private firebaseService: FirebaseService) {
     this.db = getFirestore(this.firebaseService.getFirebaseApp());
-    console.log(this.db);
   }
 
   async createRoom(roomData: any) {
