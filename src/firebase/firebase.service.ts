@@ -105,7 +105,4 @@ export class FirebaseService implements OnModuleInit {
         throw new UnauthorizedException("Identifiant de connexion invalide")  
     }
   }
-
-
-  // ... autres méthodes existantes ...
 }
