@@ -52,7 +52,6 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Ajouter un film par son ID TMDB' }),
     (0, swagger_1.ApiParam)({ name: 'id', description: 'ID TMDB du film' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Film ajouté avec succès', type: movie_dto_1.MovieDto }),
-    (0, AuthMetadata_1.Public)(),
     (0, common_1.Post)('/:id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
@@ -62,7 +61,6 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Récupérer les films sauvegardés' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Liste des films sauvegardés' }),
-    (0, AuthMetadata_1.Public)(),
     (0, common_1.Get)('/saved'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -72,7 +70,6 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Récupérer un film par ID' }),
     (0, swagger_1.ApiParam)({ name: 'id', description: 'ID du film' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Film trouvé' }),
-    (0, AuthMetadata_1.Public)(),
     (0, common_1.Get)('/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -83,7 +80,6 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Supprimer un film' }),
     (0, swagger_1.ApiParam)({ name: 'id', description: 'ID du film' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Film supprimé' }),
-    (0, AuthMetadata_1.Public)(),
     (0, common_1.Delete)('/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -93,6 +89,7 @@ __decorate([
 exports.MoviesController = MoviesController = __decorate([
     (0, swagger_1.ApiTags)('movies'),
     (0, common_1.Controller)('movies'),
+    (0, swagger_1.ApiBearerAuth)('JWT-auth'),
     __metadata("design:paramtypes", [movies_service_1.MoviesService])
 ], MoviesController);
 //# sourceMappingURL=movies.controller.js.map

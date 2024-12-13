@@ -16,7 +16,6 @@ exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const firebase_service_1 = require("../firebase/firebase.service");
 const swagger_1 = require("@nestjs/swagger");
-const AuthMetadata_1 = require("../auth/AuthMetadata");
 let UsersController = class UsersController {
     constructor(firebaseService) {
         this.firebaseService = firebaseService;
@@ -37,7 +36,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "removeUser", null);
 exports.UsersController = UsersController = __decorate([
-    (0, AuthMetadata_1.Public)(),
+    (0, swagger_1.ApiBearerAuth)('JWT-auth'),
     (0, swagger_1.ApiTags)('users'),
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [firebase_service_1.FirebaseService])

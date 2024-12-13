@@ -7,7 +7,7 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 
 @ApiTags('bookings')
-@ApiBearerAuth()
+@ApiBearerAuth('JWT-auth')
 @Controller('bookings')
 export class BookingsController {
 

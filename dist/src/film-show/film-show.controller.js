@@ -16,7 +16,6 @@ exports.FilmShowController = void 0;
 const common_1 = require("@nestjs/common");
 const film_show_service_1 = require("./film-show.service");
 const film_show_entity_1 = require("./film-show.entity");
-const AuthMetadata_1 = require("../auth/AuthMetadata");
 const swagger_1 = require("@nestjs/swagger");
 const create_film_show_dto_1 = require("./dto/create-film-show.dto");
 const update_film_show_dto_1 = require("./dto/update-film-show.dto");
@@ -107,7 +106,6 @@ __decorate([
     }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Séance créée avec succès' }),
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Données invalides ou salle non disponible' }),
-    (0, AuthMetadata_1.Public)(),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -121,7 +119,6 @@ __decorate([
         description: 'Liste des séances avec les détails des films',
         type: [create_film_show_dto_1.CreateFilmShowDto]
     }),
-    (0, AuthMetadata_1.Public)(),
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -136,7 +133,6 @@ __decorate([
         type: film_show_entity_1.FilmShow
     }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Séance non trouvée' }),
-    (0, AuthMetadata_1.Public)(),
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -151,7 +147,6 @@ __decorate([
         description: 'Liste des séances pour la salle spécifiée',
         type: [film_show_entity_1.FilmShow]
     }),
-    (0, AuthMetadata_1.Public)(),
     (0, common_1.Get)('room/:roomId'),
     __param(0, (0, common_1.Param)('roomId')),
     __metadata("design:type", Function),
@@ -176,7 +171,6 @@ __decorate([
     (0, swagger_1.ApiParam)({ name: 'id', description: 'ID de la séance' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Séance supprimée avec succès' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Séance non trouvée' }),
-    (0, AuthMetadata_1.Public)(),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -185,6 +179,7 @@ __decorate([
 ], FilmShowController.prototype, "deleteFilmShow", null);
 exports.FilmShowController = FilmShowController = __decorate([
     (0, swagger_1.ApiTags)('film-shows'),
+    (0, swagger_1.ApiBearerAuth)('JWT-auth'),
     (0, common_1.Controller)('film-shows'),
     __metadata("design:paramtypes", [film_show_service_1.FilmShowService])
 ], FilmShowController);

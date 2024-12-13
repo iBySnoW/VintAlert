@@ -1,10 +1,11 @@
 import { Controller, Delete, Param, UseGuards } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Public } from 'src/auth/AuthMetadata';
 
-@Public()
+
+@ApiBearerAuth('JWT-auth')
 @ApiTags('users')
 @Controller('users')
 export class UsersController {

@@ -11,11 +11,12 @@ import {
 import { FilmShowService } from './film-show.service';
 import { FilmShow } from './film-show.entity';
 import { Public } from 'src/auth/AuthMetadata';
-import { ApiBody, ApiOperation, ApiTags, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateFilmShowDto } from './dto/create-film-show.dto';
 import { UpdateFilmShowDto } from './dto/update-film-show.dto';
 
 @ApiTags('film-shows')
+@ApiBearerAuth('JWT-auth')
 @Controller('film-shows')
 export class FilmShowController {
   constructor(private readonly filmShowService: FilmShowService) {}
@@ -36,7 +37,6 @@ export class FilmShowController {
   })
   @ApiResponse({ status: 201, description: 'Séance créée avec succès' })
   @ApiResponse({ status: 400, description: 'Données invalides ou salle non disponible' })
-  @Public()
   @Post()
   async createFilmShow(@Body() createFilmShowDto: CreateFilmShowDto) {
     try {
@@ -59,7 +59,6 @@ export class FilmShowController {
     description: 'Liste des séances avec les détails des films',
     type: [CreateFilmShowDto]
   })
-  @Public()
   @Get()
   async getAllFilmShows() {
     try {
@@ -79,8 +78,6 @@ export class FilmShowController {
     type: FilmShow
   })
   @ApiResponse({ status: 404, description: 'Séance non trouvée' })
-
-  @Public()
   @Get(':id')
   async getFilmShowById(@Param('id') id: string) {
     try {
@@ -99,7 +96,6 @@ export class FilmShowController {
     description: 'Liste des séances pour la salle spécifiée',
     type: [FilmShow]
   })
-  @Public()
   @Get('room/:roomId')
   async getFilmShowsByRoom(@Param('roomId') roomId: number) {
     try {
@@ -149,7 +145,6 @@ export class FilmShowController {
   @ApiParam({ name: 'id', description: 'ID de la séance' })
   @ApiResponse({ status: 200, description: 'Séance supprimée avec succès' })
   @ApiResponse({ status: 404, description: 'Séance non trouvée' })
-  @Public()
   @Delete(':id')
   async deleteFilmShow(@Param('id') id: string) {
     try {
