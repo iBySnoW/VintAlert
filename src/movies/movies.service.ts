@@ -29,7 +29,6 @@ export class MoviesService {
   }
 
   async addMovieById(movieId: number) {
-    console.log(`${this.apiUrl}/movie/${movieId}`);
     const response = await axios.get(`${this.apiUrl}/movie/${movieId}`, {
         headers: { Authorization: "Bearer " + this.apiKey },
     });
