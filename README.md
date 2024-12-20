@@ -45,18 +45,20 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Run tests
+## Run tests with cypress
 
 ```bash
-# unit tests
-$ npm run test
-
 # e2e tests
 $ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
+
+## Vercel Deployment
+
+### Production
+L'application est déployée sur Vercel. Le déploiement est automatique à chaque push sur la branche main.
+
+URL de production : https://vint-alert-kwrlw1bhq-ibysnows-projects.vercel.app/
+URL du swagger : https://vint-alert-kwrlw1bhq-ibysnows-projects.vercel.app/docs/index.html
 
 ## Resources
 
@@ -83,3 +85,49 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+
+### Local
+
+1. Installer les dépendances :
+```bash
+npm install
+```
+
+2. Créer un fichier `.env` à la racine du projet avec les variables d'environnement nécessaires (voir `.env.example`)
+
+3. Lancer l'application en mode développement :
+```bash
+npm run start:dev
+```
+
+L'application sera disponible sur http://localhost:3000
+
+## Technologies
+
+- NestJS
+- Firebase (Authentication & Firestore)
+- Swagger/OpenAPI pour la documentation
+- Vercel pour le déploiement
+
+## Fonctionnalités
+
+- Authentification avec Firebase
+- Gestion des salles de cinéma
+- Gestion des films
+- Gestion des séances
+- Gestion des réservations
+
+## Tests
+
+```bash
+# Tests unitaires
+npm run test
+
+# Tests e2e
+npm run test:e2e
+
+# Coverage
+npm run test:cov
+```
