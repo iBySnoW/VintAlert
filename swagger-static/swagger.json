@@ -1,0 +1,1020 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/config": {
+      "get": {
+        "operationId": "AppController_getConfig",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "delete": {
+        "operationId": "UsersController_removeUser",
+        "summary": "Supprimer un utilisateur",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Utilisateur supprimé avec succès"
+          },
+          "404": {
+            "description": "Utilisateur non trouvé"
+          }
+        },
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_method",
+        "summary": "Connexion utilisateur",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Connexion réussie"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "summary": "Inscription utilisateur",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Inscription réussie"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/rooms": {
+      "post": {
+        "operationId": "RoomController_createRoom",
+        "summary": "Créer une nouvelle salle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRoomDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Salle créée avec succès"
+          }
+        },
+        "tags": [
+          "rooms"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "RoomController_getAllRooms",
+        "summary": "Récupérer toutes les salles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Liste des salles récupérée"
+          }
+        },
+        "tags": [
+          "rooms"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    },
+    "/rooms/{id}": {
+      "get": {
+        "operationId": "RoomController_getRoomById",
+        "summary": "Récupérer une salle par son ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la salle",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Salle trouvée"
+          }
+        },
+        "tags": [
+          "rooms"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "RoomController_updateRoom",
+        "summary": "Mettre à jour une salle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la salle",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRoomDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Salle mise à jour"
+          }
+        },
+        "tags": [
+          "rooms"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "RoomController_deleteRoom",
+        "summary": "Supprimer une salle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la salle",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Salle supprimée"
+          }
+        },
+        "tags": [
+          "rooms"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    },
+    "/bookings": {
+      "post": {
+        "operationId": "BookingsController_createBooking",
+        "summary": "Créer une réservation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Données de la réservation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookingDto"
+              },
+              "examples": {
+                "example1": {
+                  "value": {
+                    "filmShowId": "abc123",
+                    "userId": "user123",
+                    "numberOfSeats": 2
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Réservation créée avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "booking123",
+                    "message": "Réservation créée avec succès"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides ou séance complète"
+          }
+        },
+        "tags": [
+          "bookings"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "BookingsController_getBookings",
+        "summary": "Récupérer toutes les réservations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Liste des réservations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CreateBookingDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "bookings"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    },
+    "/bookings/{id}": {
+      "get": {
+        "operationId": "BookingsController_getBookingsByRoom",
+        "summary": "Récupérer les réservations par salle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la salle",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Réservations trouvées"
+          }
+        },
+        "tags": [
+          "bookings"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "BookingsController_updateBooking",
+        "summary": "Mettre à jour une réservation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la réservation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Réservation mise à jour"
+          }
+        },
+        "tags": [
+          "bookings"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "BookingsController_deleteBooking",
+        "summary": "Supprimer une réservation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la réservation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Réservation supprimée"
+          }
+        },
+        "tags": [
+          "bookings"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    },
+    "/movies": {
+      "get": {
+        "operationId": "MoviesController_GetMovies",
+        "summary": "Récupérer les films actuels",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Liste des films actuels",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MovieDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "movies"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    },
+    "/movies/{id}": {
+      "post": {
+        "operationId": "MoviesController_getMovieByID",
+        "summary": "Ajouter un film par son ID TMDB",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID TMDB du film",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Film ajouté avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MovieDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "movies"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "MoviesController_getMovieByIdFirebase",
+        "summary": "Récupérer un film par ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID du film",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Film trouvé"
+          }
+        },
+        "tags": [
+          "movies"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "MoviesController_removeMovie",
+        "summary": "Supprimer un film",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID du film",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Film supprimé"
+          }
+        },
+        "tags": [
+          "movies"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    },
+    "/movies/saved": {
+      "get": {
+        "operationId": "MoviesController_getMoviesFromFirebase",
+        "summary": "Récupérer les films sauvegardés",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Liste des films sauvegardés"
+          }
+        },
+        "tags": [
+          "movies"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    },
+    "/film-shows": {
+      "post": {
+        "operationId": "FilmShowController_createFilmShow",
+        "summary": "Créer une nouvelle séance de film",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Données de la séance à créer",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFilmShowDto"
+              },
+              "examples": {
+                "example1": {
+                  "value": {
+                    "roomId": "salle-1",
+                    "movieId": "Tbv1IhN4xvX7sV75UeLb",
+                    "startDate": "2024-03-20T14:30:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Séance créée avec succès"
+          },
+          "400": {
+            "description": "Données invalides ou salle non disponible"
+          }
+        },
+        "tags": [
+          "film-shows"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "FilmShowController_getAllFilmShows",
+        "summary": "Récupérer toutes les séances",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Liste des séances avec les détails des films",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CreateFilmShowDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "film-shows"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    },
+    "/film-shows/{id}": {
+      "get": {
+        "operationId": "FilmShowController_getFilmShowById",
+        "summary": "Récupérer une séance par son ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la séance",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Séance trouvée avec les détails du film",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilmShow"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Séance non trouvée"
+          }
+        },
+        "tags": [
+          "film-shows"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "FilmShowController_updateFilmShow",
+        "summary": "Mettre à jour une séance",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la séance",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFilmShowDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Séance mise à jour avec succès"
+          },
+          "400": {
+            "description": "Données invalides ou salle non disponible"
+          }
+        },
+        "tags": [
+          "film-shows"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "FilmShowController_deleteFilmShow",
+        "summary": "Supprimer une séance",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la séance",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Séance supprimée avec succès"
+          },
+          "404": {
+            "description": "Séance non trouvée"
+          }
+        },
+        "tags": [
+          "film-shows"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    },
+    "/film-shows/room/{roomId}": {
+      "get": {
+        "operationId": "FilmShowController_getFilmShowsByRoom",
+        "summary": "Récupérer les séances par salle",
+        "parameters": [
+          {
+            "name": "roomId",
+            "required": true,
+            "in": "path",
+            "description": "ID de la salle",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des séances pour la salle spécifiée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FilmShow"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "film-shows"
+        ],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "VintAlert API",
+    "description": "API to get the best business",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "JWT-auth": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "name": "JWT",
+        "description": "Enter JWT token",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "CreateRoomDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nom de la salle",
+            "example": "Salle 1"
+          },
+          "capacity": {
+            "type": "number",
+            "description": "Capacité de la salle",
+            "example": 100,
+            "minimum": 1
+          }
+        },
+        "required": [
+          "name",
+          "capacity"
+        ]
+      },
+      "UpdateRoomDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nom de la salle",
+            "example": "Salle 1"
+          },
+          "capacity": {
+            "type": "number",
+            "description": "Capacité de la salle",
+            "example": 100,
+            "minimum": 1
+          }
+        }
+      },
+      "CreateBookingDto": {
+        "type": "object",
+        "properties": {
+          "filmShowId": {
+            "type": "string",
+            "description": "ID de la séance",
+            "example": "filmshow-123"
+          },
+          "userId": {
+            "type": "string",
+            "description": "ID de l'utilisateur",
+            "example": "user-123"
+          },
+          "numberOfSeats": {
+            "type": "number",
+            "description": "Nombre de places",
+            "example": 2,
+            "minimum": 1
+          }
+        },
+        "required": [
+          "filmShowId",
+          "userId",
+          "numberOfSeats"
+        ]
+      },
+      "UpdateBookingDto": {
+        "type": "object",
+        "properties": {
+          "filmShowId": {
+            "type": "string",
+            "description": "ID de la séance",
+            "example": "abc123"
+          },
+          "numberOfSeats": {
+            "type": "number",
+            "description": "Nombre de places",
+            "example": 2,
+            "minimum": 1
+          }
+        }
+      },
+      "MovieDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "ID du film dans TMDB",
+            "example": 550
+          },
+          "title": {
+            "type": "string",
+            "description": "Titre du film",
+            "example": "Fight Club"
+          },
+          "duration": {
+            "type": "number",
+            "description": "Durée en minutes",
+            "example": 139
+          },
+          "vote_average": {
+            "type": "number",
+            "description": "Note moyenne",
+            "example": 8.4
+          },
+          "poster_path": {
+            "type": "string",
+            "description": "Chemin de l'affiche",
+            "example": "/path/to/poster.jpg"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "duration",
+          "vote_average",
+          "poster_path"
+        ]
+      },
+      "CreateFilmShowDto": {
+        "type": "object",
+        "properties": {
+          "roomId": {
+            "type": "string",
+            "description": "ID de la salle",
+            "example": "salle-1"
+          },
+          "movieId": {
+            "type": "string",
+            "description": "ID du film dans Firebase",
+            "example": "Tbv1IhN4xvX7sV75UeLb"
+          },
+          "startDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Date et heure de début de la séance",
+            "example": "2024-03-20T14:30:00.000Z"
+          }
+        },
+        "required": [
+          "roomId",
+          "movieId",
+          "startDate"
+        ]
+      },
+      "FilmShow": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateFilmShowDto": {
+        "type": "object",
+        "properties": {
+          "roomId": {
+            "type": "string",
+            "description": "ID de la salle"
+          },
+          "movieId": {
+            "type": "string",
+            "description": "ID du film"
+          },
+          "startDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Date de début de la séance"
+          },
+          "endDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Date de fin de la séance"
+          }
+        }
+      }
+    }
+  }
+}

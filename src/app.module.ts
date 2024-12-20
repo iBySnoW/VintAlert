@@ -11,6 +11,8 @@ import { BookingsModule } from './bookings/bookings.module';
 import { MoviesModule } from './movies/movies.module';
 import { FilmShowModule } from './film-show/film-show.module';
 import { UsersController } from './users/users.controller';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path'
 
 
 @Module({
@@ -25,6 +27,10 @@ import { UsersController } from './users/users.controller';
     BookingsModule,
     MoviesModule,
     FilmShowModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'swagger-static'),
+      serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/docs',
+    })
   ],
   controllers: [AppController, UsersController],
   providers: [

@@ -20,6 +20,8 @@ const bookings_module_1 = require("./bookings/bookings.module");
 const movies_module_1 = require("./movies/movies.module");
 const film_show_module_1 = require("./film-show/film-show.module");
 const users_controller_1 = require("./users/users.controller");
+const serve_static_1 = require("@nestjs/serve-static");
+const path_1 = require("path");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -36,6 +38,10 @@ exports.AppModule = AppModule = __decorate([
             bookings_module_1.BookingsModule,
             movies_module_1.MoviesModule,
             film_show_module_1.FilmShowModule,
+            serve_static_1.ServeStaticModule.forRoot({
+                rootPath: (0, path_1.join)(__dirname, '..', 'swagger-static'),
+                serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/docs',
+            })
         ],
         controllers: [app_controller_1.AppController, users_controller_1.UsersController],
         providers: [

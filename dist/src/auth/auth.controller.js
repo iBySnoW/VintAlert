@@ -22,6 +22,14 @@ const swagger_1 = require("@nestjs/swagger");
 class LoginDto {
 }
 exports.LoginDto = LoginDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], LoginDto.prototype, "password", void 0);
 let AuthController = class AuthController {
     constructor(authService, fireService) {
         this.authService = authService;

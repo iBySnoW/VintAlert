@@ -8,10 +8,12 @@ import { AuthService } from './auth.service';
 import { Public } from './AuthMetadata';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { FirebaseService } from 'src/firebase/firebase.service';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery, ApiProperty } from '@nestjs/swagger';
 
 export class LoginDto {
+  @ApiProperty()
   email: string;
+  @ApiProperty()
   password: string;
 }
 
